@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/69bus/Desktop/c++/array basic questions",
-      "program": "c:/Users/69bus/Desktop/c++/array basic questions/build/Debug/outDebug",
+      "cwd": "c:/Users/69bus/Desktop/c++/array basics questins",
+      "program": "c:/Users/69bus/Desktop/c++/array basics questins/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
