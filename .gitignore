@@ -1,0 +1,8 @@
+# C++ compiled executables
+backend/*_test
+
+# Object files
+*.o
+
+# Build directories
+build/
