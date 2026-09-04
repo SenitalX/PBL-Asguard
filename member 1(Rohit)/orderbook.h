@@ -1,23 +1,36 @@
 #ifndef ORDERBOOK_H
 #define ORDERBOOK_H
+
 #include <vector>
 #include "order.h"
 
 using namespace std;
 
+// OrderBook BUY/SELL orders ko store, sort aur match karega
 class OrderBook
 {
 private:
-    vector<Order> buyOrders; //multiple values store kar sakte hain.
-    vector<Order> sellOrders; //Multiple SELL orders store
+    vector<Order> buyOrders;      // BUY orders
+    vector<Order> sellOrders;     // SELL orders
 
 public:
-    void addBuyOrder(Order order);//Ek Order receive karo aur BUY Order Book mein add karo.
-    void addSellOrder(Order order);//Ek Order receive karo aur sellOrders vector mein add karo
+    // Naye orders add karne ke liye
+    void addBuyOrder(Order order);
+    void addSellOrder(Order order);
 
-    vector<Order> getBuyOrders();//Saare BUY orders return karega
-    vector<Order> getSellOrders();//Saare SELL orders return karega
+    // Orders access karne ke liye
+    vector<Order> getBuyOrders();
+    vector<Order> getSellOrders();
+
+    // Price-Time Priority ke according sorting
+    void sortBuyOrders();
+    void sortSellOrders();
+
+    // BUY aur SELL orders ko match karega
+    void matchOrders();
+
+    // Matching tests ke liye remaining orders display karega
+    void displayOrderBook();
 };
 
 #endif
-

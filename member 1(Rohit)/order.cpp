@@ -1,6 +1,6 @@
 #include "order.h"
-//Pehla Order: Ye function Order class ka hai.
-// secod order - Function ka naam Order hai.
+
+// Constructor: Order object ki saari details initialize karta hai
 Order::Order(int orderId,
              int userId,
              string stockSymbol,
@@ -10,8 +10,7 @@ Order::Order(int orderId,
              string timestamp,
              string orderType)
 {
-    //// this-> = current object ka variable, right side = parameter
-    this->orderId = orderId;// // object ka orderId = parameter ki value
+    this->orderId = orderId;
     this->userId = userId;
     this->stockSymbol = stockSymbol;
     this->side = side;
@@ -21,41 +20,55 @@ Order::Order(int orderId,
     this->orderType = orderType;
 }
 
+// Order ki unique ID return karega
 int Order::getOrderId()
 {
-    return orderId; //object ka order id return karega(value nikal ke dega)
+    return orderId;
 }
 
+// User ID return karega
 int Order::getUserId()
 {
     return userId;
 }
 
+// Stock symbol return karega
 string Order::getStockSymbol()
 {
     return stockSymbol;
 }
 
+// BUY ya SELL return karega
 string Order::getSide()
 {
     return side;
 }
 
+// Current remaining quantity return karega
 int Order::getQuantity()
 {
     return quantity;
 }
 
+// Matching ke baad remaining quantity update karega
+void Order::setQuantity(int quantity)
+{
+    this->quantity = quantity;
+}
+
+// Order price return karega
 double Order::getPrice()
 {
     return price;
 }
 
+// Order ka timestamp return karega
 string Order::getTimestamp()
 {
     return timestamp;
 }
 
+// MARKET ya LIMIT order type return karega
 string Order::getOrderType()
 {
     return orderType;
