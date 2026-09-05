@@ -1,8 +1,5 @@
-# C++ compiled executables
-backend/*_test
-
-# Object files
-*.o
-
-# Build directories
-build/
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
