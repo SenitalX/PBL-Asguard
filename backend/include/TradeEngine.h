@@ -1,6 +1,8 @@
 #ifndef TRADE_ENGINE_H
 #define TRADE_ENGINE_H
 
+#include "MatchingEngine.h"
+
 #include "Order.h"
 #include "Trade.h"
 #include "OrderManager.h"
@@ -11,9 +13,8 @@
 class TradeEngine {
 
 private:
-
     OrderManager& orderManager;
-
+     MatchingEngine matchingEngine;
     int nextTradeId;
 
     bool validateOrder(

@@ -2,6 +2,7 @@
 
 TradeEngine::TradeEngine(OrderManager& manager)
     : orderManager(manager),
+      matchingEngine(manager),
       nextTradeId(1)
 {
 }
@@ -65,11 +66,37 @@ bool TradeEngine::processOrder(
         order.getOrderId(),
         OrderStatus::OPEN
     );
+    // Step 4: Match the incoming order.
+    std::size_t previousTradeCount = trades.size();
 
-    order.setStatus(OrderStatus::OPEN);
+    matchingEngine.matchOrder(order.getOrderId(), trades);
 
-    // Matching Engine will be connected later
-    message = "Order accepted and placed in the order system";
+    Order* storedOrder = orderManager.getOrder(order.getOrderId());
+
+    if (storedOrder != nullptr) {
+        order.setFilledQuantity(storedOrder->getFilledQuantity());
+        order.setStatus(storedOrder->getStatus());
+    }
+
+    // Market orders cannot remain on the order book.
+    if (order.getType() == OrderType::MARKET &&
+        order.getStatus() != OrderStatus::FILLED) {
+        orderManager.updateOrderStatus(
+            order.getOrderId(),
+            OrderStatus::CANCELLED
+        );
+
+        order.setStatus(OrderStatus::CANCELLED);
+    }
+
+    if (trades.size() > previousTradeCount) {
+        message = "Order accepted; matching trades executed";
+    } else if (order.getStatus() == OrderStatus::CANCELLED) {
+        message = "Market order cancelled: no complete execution available";
+    } else {
+        message = "Order accepted and resting in the order system";
+    }
 
     return true;
+
 }
