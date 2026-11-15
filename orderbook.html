@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Book — HFT Order Matching Simulator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <nav>
+        <div class="nav-brand">HFT Order Matching Simulator</div>
+        <div class="nav-links">
+            <a href="index.html">Dashboard</a>
+            <a href="placeorder.html">Place Order</a>
+            <a href="orderbook.html" class="active">Order Book</a>
+            <a href="history.html">Trade History</a>
+        </div>
+        <div class="nav-status">
+            <span class="status-dot"></span>
+            <span>Engine: Standalone</span>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <h1>Live Order Book</h1>
+
+        <div class="two-col">
+
+            <div class="panel">
+                <h2>Buy Orders (Bids)</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Stock</th>
+                            <th>Price</th>
+                            <th>Qty</th>
+                        </tr>
+                    </thead>
+                    <tbody id="buyTable">
+                        <tr>
+                            <td colspan="4" class="empty">No buy orders.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="panel">
+                <h2>Sell Orders (Asks)</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Stock</th>
+                            <th>Price</th>
+                            <th>Qty</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sellTable">
+                        <tr>
+                            <td colspan="4" class="empty">No sell orders.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="api.js"></script>
+    <script src="orderbook.js"></script>
+</body>
+
+</html>

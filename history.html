@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade History — HFT Order Matching Simulator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <nav>
+        <div class="nav-brand">HFT Order Matching Simulator</div>
+        <div class="nav-links">
+            <a href="index.html">Dashboard</a>
+            <a href="placeorder.html">Place Order</a>
+            <a href="orderbook.html">Order Book</a>
+            <a href="history.html" class="active">Trade History</a>
+        </div>
+        <div class="nav-status">
+            <span class="status-dot"></span>
+            <span>Engine: Standalone</span>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <h1>Trade History</h1>
+
+        <div class="panel">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Trade ID</th>
+                        <th>Order ID</th>
+                        <th>Stock</th>
+                        <th>Side</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="historyTable">
+                    <tr>
+                        <td colspan="9" class="empty">No trades yet.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script src="api.js"></script>
+    <script src="app.js"></script>
+    <script>
+        async function loadHistory() {
+            const trades = await API.getTrades();
+            const orders = await API.getOrders();
+            const body = document.getElementById('historyTable');
+
+            if (trades.length === 0) {
+                body.innerHTML = '<tr><td colspan="9" class="empty">No trades yet.</td></tr>';
+                return;
+            }
+
+            body.innerHTML = trades.slice().reverse().map((t, i) => {
+                const cls = t.side === 'BUY' ? 'buy' : 'sell';
+                const total = (t.qty * t.price).toFixed(2);
+                return '<tr>' +
+                    '<td>' + t.id + '</td>' +
+                    '<td>' + (orders[i] ? orders[i].id : '—') + '</td>' +
+                    '<td>' + t.stock + '</td>' +
+                    '<td class="' + cls + '">' + t.side + '</td>' +
+                    '<td>' + t.qty + '</td>' +
+                    '<td>₹' + t.price + '</td>' +
+                    '<td>₹' + total + '</td>' +
+                    '<td>' + t.time + '</td>' +
+                    '<td>' + t.status + '</td>' +
+                    '</tr>';
+            }).join('');
+        }
+
+        loadHistory();
+    </script>
+</body>
+
+</html>

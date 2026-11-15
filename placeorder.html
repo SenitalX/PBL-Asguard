@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Place Order — VeloxTrade</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .search-wrapper {
+            position: relative;
+        }
+
+        #suggestionsBox {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #121214;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            z-index: 1000;
+            max-height: 250px;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+        }
+
+        #suggestionsBox div {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: #FAFAFA;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        #suggestionsBox div:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .suggestion-logo {
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            object-fit: contain;
+            padding: 2px;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: #121214;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 500px;
+            max-width: 90%;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 16px;
+            margin-bottom: 16px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #FAFAFA;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #A1A1AA;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 15px;
+        }
+
+        .modal-row span {
+            color: #A1A1AA;
+        }
+
+        .modal-row strong {
+            color: #FAFAFA;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #FAFAFA;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-confirm {
+            flex: 2;
+            padding: 12px;
+            background: #EF4444;
+            border: none;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        /* CRYPTO MODE THEME OVERRIDE */
+        body.crypto-mode {
+            background: #000000;
+            background-image: none;
+        }
+
+        body.crypto-mode nav {
+            background: #0a0a0a;
+            border-bottom: 1px solid #f59e0b;
+        }
+
+        body.crypto-mode .nav-brand,
+        body.crypto-mode .nav-links a.active {
+            color: #f59e0b;
+        }
+
+        body.crypto-mode .btn-primary {
+            background: #f59e0b;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+        }
+
+        body.crypto-mode .form-group input:focus {
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+        }
+    </style>
+</head>
+
+<body id="app-body">
+
+    <nav>
+        <div class="nav-brand">HFT Order Matching Simulator</div>
+        <div class="nav-links">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="stocks.html">Market</a>
+            <a href="placeorder.html" class="active">Place Order</a>
+            <a href="orderbook.html">Order Book</a>
+            <a href="history.html">Trade History</a>
+        </div>
+        <div class="nav-status">
+            <span class="status-dot"></span>
+            <span>Engine: Standalone</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Place Order</h1>
+        <div class="panel form-panel">
+            <div class="side-toggle">
+                <button id="buyBtn" class="active-buy" onclick="setSide('BUY')">BUY</button>
+                <button id="sellBtn" onclick="setSide('SELL')">SELL</button>
+            </div>
+
+            <div class="form-group search-wrapper">
+                <label>Asset / Symbol</label>
+                <input type="text" id="stockInput" placeholder="Search Stock or Crypto" value="RELIANCE"
+                    autocomplete="off" onkeyup="handleSearch()">
+                <div id="suggestionsBox"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Order Type</label>
+                <select id="typeInput" onchange="togglePriceInput()">
+                    <option value="LIMIT">LIMIT</option>
+                    <option value="MARKET">MARKET</option>
+                </select>
+            </div>
+
+            <div class="form-group"
+                style="background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                <label style="margin-bottom: 4px;">Current Market Price</label>
+                <div id="marketPriceDisplay"
+                    style="font-family: 'JetBrains Mono', monospace; font-size: 18px; color: #22C55E;">₹1,450.00</div>
+            </div>
+
+            <div class="form-group"><label>Quantity</label><input type="number" id="qtyInput" placeholder="10"
+                    value="10" min="1"></div>
+            <div class="form-group" id="priceGroup"><label>Limit Price (₹)</label><input type="number" id="priceInput"
+                    placeholder="1450" value="1450" min="0.01" step="0.01"></div>
+
+            <div class="form-actions">
+                <button class="btn-primary" onclick="openPreview()">Preview Order</button>
+                <button class="btn-secondary" onclick="resetForm()">Reset</button>
+            </div>
+            <div id="message" class="message"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="previewModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Preview Order</h2><button class="modal-close" onclick="closePreview()">×</button>
+            </div>
+            <div style="text-align: center; margin-bottom: 24px;">
+                <div style="font-size: 14px; color: #A1A1AA; margin-bottom: 4px;" id="previewAction">Stock: Buy at
+                    Market</div>
+                <div style="font-size: 28px; font-weight: 700; color: #FAFAFA;" id="previewStock">RELIANCE</div>
+            </div>
+            <div class="modal-row"><span>Duration</span><strong>Good Until Cancelled</strong></div>
+            <div class="modal-row"><span>Estimated Price</span><strong id="previewPrice">₹1,450.00</strong></div>
+            <div class="modal-row"><span>Quantity</span><strong id="previewQty">10</strong></div>
+            <div class="modal-row"><span>Commission</span><strong>₹0.00</strong></div>
+            <div class="modal-row"
+                style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 8px; padding-top: 16px;">
+                <span>Estimated Total</span><strong style="color: #EF4444; font-size: 18px;"
+                    id="previewTotal">₹14,500.00</strong>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closePreview()">Change Order</button>
+                <button class="btn-confirm" onclick="confirmOrder()">Submit Order</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        const LOGO_DEV_KEY = "pk_IHQpy64zQh-9zxHtMbqGmw";
+
+        const stockList = [
+            { name: "RELIANCE", ticker: "RELIANCE.NS" }, { name: "TCS", ticker: "TCS.NS" },
+            { name: "INFOSYS", ticker: "INFY.NS" }, { name: "HDFC BANK", ticker: "HDFCBANK.NS" },
+            { name: "APPLE", ticker: "AAPL" }, { name: "TESLA", ticker: "TSLA" },
+            // CRYPTO ASSETS ADDED HERE
+            { name: "BITCOIN", ticker: "BTC-USD", crypto: true }, { name: "ETHEREUM", ticker: "ETH-USD", crypto: true },
+            { name: "SOLANA", ticker: "SOL-USD", crypto: true }, { name: "DOGECOIN", ticker: "DOGE-USD", crypto: true }
+        ];
+
+        let currentSide = 'BUY';
+        let currentMarketPrice = 1450.00;
+
+        function setSide(side) {
+            currentSide = side;
+            document.getElementById('buyBtn').className = side === 'BUY' ? 'active-buy' : '';
+            document.getElementById('sellBtn').className = side === 'SELL' ? 'active-sell' : '';
+        }
+
+        function handleSearch() {
+            const input = document.getElementById('stockInput').value.toUpperCase();
+            const box = document.getElementById('suggestionsBox');
+            if (input.length === 0) { box.style.display = 'none'; return; }
+
+            const matches = stockList.filter(s => s.name.includes(input)).slice(0, 5);
+
+            if (matches.length > 0) {
+                box.innerHTML = matches.map(m =>
+                    `<div onclick="selectStock('${m.name}', '${m.ticker}', ${m.crypto || false})">
+        <img src="https://img.logo.dev/ticker/${m.ticker}?token=${LOGO_DEV_KEY}&size=40" class="suggestion-logo" onerror="this.style.display='none'">
+        <span>${m.name}</span>
+      </div>`
+                ).join('');
+                box.style.display = 'block';
+            } else { box.style.display = 'none'; }
+        }
+
+        function selectStock(name, ticker, isCrypto) {
+            document.getElementById('stockInput').value = name;
+            document.getElementById('suggestionsBox').style.display = 'none';
+
+            // THE BLACKISH CRYPTO VIBE SWITCH
+            if (isCrypto) {
+                document.body.classList.add('crypto-mode');
+            } else {
+                document.body.classList.remove('crypto-mode');
+            }
+
+            updateMarketPrice(name);
+        }
+
+        document.addEventListener('click', function (e) {
+            if (e.target.id !== 'stockInput') document.getElementById('suggestionsBox').style.display = 'none';
+        });
+
+        function togglePriceInput() {
+            const type = document.getElementById('typeInput').value;
+            const priceInput = document.getElementById('priceInput');
+            const priceGroup = document.getElementById('priceGroup');
+            if (type === 'MARKET') {
+                priceInput.disabled = true; priceInput.value = currentMarketPrice.toFixed(2); priceGroup.style.opacity = '0.5';
+            } else {
+                priceInput.disabled = false; priceGroup.style.opacity = '1';
+            }
+        }
+
+        function updateMarketPrice(stockName) {
+            const stock = stockName || document.getElementById('stockInput').value.trim().toUpperCase();
+            if (!stock) return;
+            let hash = 0;
+            for (let i = 0; i < stock.length; i++) hash = stock.charCodeAt(i) + ((hash << 5) - hash);
+            currentMarketPrice = Math.abs(hash % 3900) + 100;
+            document.getElementById('marketPriceDisplay').textContent = '₹' + currentMarketPrice.toFixed(2);
+            if (document.getElementById('typeInput').value === 'MARKET') {
+                document.getElementById('priceInput').value = currentMarketPrice.toFixed(2);
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('stockInput').value = 'RELIANCE';
+            document.body.classList.remove('crypto-mode');
+            document.getElementById('typeInput').value = 'LIMIT';
+            document.getElementById('qtyInput').value = '10';
+            setSide('BUY');
+            updateMarketPrice('RELIANCE');
+            document.getElementById('priceInput').value = currentMarketPrice.toFixed(2);
+            togglePriceInput();
+            document.getElementById('message').style.display = 'none';
+        }
+
+        function openPreview() {
+            const stock = document.getElementById('stockInput').value.trim().toUpperCase();
+            const qty = parseInt(document.getElementById('qtyInput').value);
+            const price = parseFloat(document.getElementById('priceInput').value);
+            const type = document.getElementById('typeInput').value;
+
+            if (!stock || !qty || qty <= 0) { alert("Please enter valid details."); return; }
+
+            if (currentSide === 'SELL') {
+                const orders = JSON.parse(localStorage.getItem('hft_orders') || '[]');
+                const holdings = {};
+                orders.forEach(o => {
+                    if (o.stock === stock) {
+                        if (o.side === 'BUY') holdings[stock] = (holdings[stock] || 0) + o.qty;
+                        if (o.side === 'SELL') holdings[stock] = (holdings[stock] || 0) - o.qty;
+                    }
+                });
+                const ownedQty = holdings[stock] || 0;
+                if (ownedQty < qty) { alert("Rejected: You cannot sell " + qty + " shares of " + stock + ".\nYou only own " + ownedQty + " shares."); return; }
+            }
+
+            document.getElementById('previewAction').textContent = `Stock: ${currentSide === 'BUY' ? 'Buy' : 'Sell'} at ${type === 'MARKET' ? 'Market' : 'Limit'}`;
+            document.getElementById('previewStock').textContent = stock;
+            document.getElementById('previewPrice').textContent = '₹' + price.toFixed(2);
+            document.getElementById('previewQty').textContent = qty;
+            document.getElementById('previewTotal').textContent = '₹' + (qty * price).toFixed(2);
+            document.getElementById('previewModal').style.display = 'flex';
+        }
+
+        function closePreview() { document.getElementById('previewModal').style.display = 'none'; }
+
+        async function confirmOrder() {
+            const stock = document.getElementById('stockInput').value.trim().toUpperCase();
+            const type = document.getElementById('typeInput').value;
+            const qty = parseInt(document.getElementById('qtyInput').value);
+            const price = parseFloat(document.getElementById('priceInput').value);
+            const confirmBtn = event.target;
+            confirmBtn.disabled = true; confirmBtn.textContent = 'Processing...';
+
+            try {
+                const result = await API.placeOrder({ stock, side: currentSide, type, qty, price });
+                closePreview();
+                const msg = document.getElementById('message');
+                msg.className = 'message success';
+                msg.textContent = currentSide + ' order ' + result.id + ' placed: ' + qty + ' × ' + stock + ' @ ₹' + price + ' — Status: ' + result.status;
+            } catch (err) { alert('Order failed.'); }
+
+            confirmBtn.disabled = false; confirmBtn.textContent = 'Submit Order';
+        }
+
+        updateMarketPrice();
+        togglePriceInput();
+    </script>
+</body>
+
+</html>

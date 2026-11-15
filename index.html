@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeloxTrade — Learn the market.</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            overflow-x: hidden;
+        }
+
+        .landing-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 40px;
+        }
+
+        .landing-nav a {
+            color: #F8FAFC;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+
+        .landing-nav a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 80px auto;
+            padding: 0 40px;
+            gap: 60px;
+        }
+
+        .hero-text {
+            flex: 1;
+        }
+
+        .hero-text h1 {
+            font-size: 64px;
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -2px;
+            margin-bottom: 24px;
+        }
+
+        .hero-text h1 span {
+            color: #10B981;
+        }
+
+        .hero-text p {
+            font-size: 18px;
+            color: #94A3B8;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .features {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .feature {
+            font-size: 14px;
+            color: #10B981;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .hero-card {
+            flex: 0 0 400px;
+            background: rgba(20, 25, 25, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+        }
+
+        .hero-card h3 {
+            font-size: 16px;
+            color: #94A3B8;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .hero-card .balance {
+            font-size: 36px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 8px;
+        }
+
+        .hero-card .sub {
+            font-size: 14px;
+            color: #64748B;
+            margin-bottom: 24px;
+        }
+
+        .hero-card .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 14px;
+        }
+
+        .hero-card .row span {
+            color: #94A3B8;
+        }
+
+        .hero-card .row strong {
+            color: #F8FAFC;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .btn-start {
+            display: inline-block;
+            padding: 16px 32px;
+            background: #10B981;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+            transition: 0.2s;
+        }
+
+        .btn-start:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 900px) {
+            .hero {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .features {
+                justify-content: center;
+            }
+
+            .hero-card {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="landing-nav">
+        <div style="font-weight: 800; font-size: 20px; color: #F8FAFC; display: flex; align-items: center; gap: 8px;">
+            <span style="color: #10B981;">◆</span> VeloxTrade
+        </div>
+        <a href="dashboard.html">Launch App</a>
+    </div>
+
+    <div class="hero">
+        <div class="hero-text">
+            <h1>Learn the market.<br><span>Practice the trade.</span></h1>
+            <p>A simulated stock market where you can place BUY/SELL orders and see the complete trading flow without
+                real money.</p>
+
+            <div class="features">
+                <div class="feature">✓ Simulated prices</div>
+                <div class="feature">✓ Paper trading</div>
+                <div class="feature">✓ Portfolio tracking</div>
+            </div>
+
+            <a href="dashboard.html" class="btn-start">Start Trading Now</a>
+        </div>
+
+        <div class="hero-card">
+            <h3>Portfolio overview <span
+                    style="background: #10B981; color: #000; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-left: 8px;">DEMO</span>
+            </h3>
+            <div class="balance">₹1,00,000</div>
+            <div class="sub">Available balance</div>
+
+            <div class="row">
+                <span>Portfolio</span>
+                <strong>₹0</strong>
+            </div>
+            <div class="row">
+                <span>P/L</span>
+                <strong>₹0</strong>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
